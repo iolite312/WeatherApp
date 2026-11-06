@@ -1,0 +1,46 @@
+# Local development: runs the API and worker against Azurite (local Azure Storage emulator).
+x-azurite-connection: &azurite-connection >-
+  DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;
+
+services:
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck --loose
+    ports:
+      - "10000:10000" # Blob
+      - "10001:10001" # Queue
+      - "10002:10002" # Table
+    volumes:
+      - azurite-data:/data
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      AZURE_STORAGE_CONNECTION_STRING: *azurite-connection
+      # Inside the network the blob host is "azurite"; the browser on the host reaches it via localhost.
+      BLOB_PUBLIC_BASE_URL: http://localhost:10000/devstoreaccount1
+      PORT: 3000
+    depends_on:
+      - azurite
+
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      AZURE_STORAGE_CONNECTION_STRING: *azurite-connection
+    depends_on:
+      - azurite
+
+volumes:
+  azurite-data:

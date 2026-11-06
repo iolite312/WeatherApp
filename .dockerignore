@@ -1,0 +1,12 @@
+**/node_modules
+**/dist
+**/*.tsbuildinfo
+
+.git
+.gitignore
+.idea
+.vscode
+.env
+*.md
+infra
+docker-compose.yml

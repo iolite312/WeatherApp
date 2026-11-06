@@ -1,5 +1,8 @@
 .idea/
+.vscode/
 node_modules/
 dist/
+*.tsbuildinfo
 assets/
 .env
+infra/*.json

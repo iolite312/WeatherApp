@@ -1,0 +1,21 @@
+packages:
+  - shared
+  - api
+  - worker
+minimumReleaseAgeExclude:
+  - '@biomejs/biome@2.6.6'
+  - '@biomejs/cli-android-arm64@2.6.6'
+  - '@biomejs/cli-android-x64@2.6.6'
+  - '@biomejs/cli-darwin-arm64@2.6.6'
+  - '@biomejs/cli-darwin-x64@2.6.6'
+  - '@biomejs/cli-linux-arm64-musl@2.6.6'
+  - '@biomejs/cli-linux-arm64@2.6.6'
+  - '@biomejs/cli-linux-x64-musl@2.6.6'
+  - '@biomejs/cli-linux-x64@2.6.6'
+  - '@biomejs/cli-win32-arm64@2.6.6'
+  - '@biomejs/cli-win32-x64@2.6.6'
+
+# Dependencies allowed to run install scripts. @scarf/scarf (pulled in by swagger-ui) only sends telemetry.
+allowBuilds:
+  esbuild: true
+  '@scarf/scarf': false

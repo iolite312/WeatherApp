@@ -1,0 +1,26 @@
+{
+  "name": "@weatherapp/shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@azure/data-tables": "^13.3.2",
+    "@azure/storage-blob": "^12.34.0",
+    "@azure/storage-queue": "^12.32.0",
+    "pino": "^10.4.0"
+  }
+}

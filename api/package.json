@@ -1,0 +1,26 @@
+{
+  "name": "@weatherapp/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "tsx watch --env-file-if-exists=../.env src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@weatherapp/shared": "workspace:*",
+    "express": "^5.3.0",
+    "helmet": "^8.3.0",
+    "pino-http": "^11.0.0",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/swagger-ui-express": "^4.1.8"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@weatherapp/worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "tsx watch --env-file-if-exists=../.env src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@azure/storage-queue": "^12.32.0",
+    "@napi-rs/canvas": "^1.1.0",
+    "@weatherapp/shared": "workspace:*"
+  }
+}

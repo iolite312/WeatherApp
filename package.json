@@ -1,0 +1,22 @@
+{
+  "name": "weatherapp",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "packageManager": "pnpm@12.9.0",
+  "scripts": {
+    "build": "pnpm --filter @weatherapp/shared build && pnpm --filter @weatherapp/api --filter @weatherapp/worker build",
+    "typecheck": "pnpm --filter @weatherapp/shared build && pnpm --filter @weatherapp/api --filter @weatherapp/worker typecheck",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.6",
+    "@types/node": "^24.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
