@@ -32,46 +32,18 @@ flowchart LR
    `completed`.
 4. `GET /api/jobs/{id}` shows progress; `GET /api/jobs/{id}/images` returns a read-only SAS link for every image.
 
-The worker reads messages from the queues itself (receive → process → delete). A failed message is retried with
-back-off, and after 5 attempts it is moved to a `<queue>-poison` queue and the station (or job) is marked `failed`.
-KEDA scales the worker on the length of both queues, down to zero replicas when there's nothing to do.
-
-Job state lives in Table Storage, one partition per job: a summary row plus one row per station. Each worker only
-writes its own station's row, so the fan-out never fights over a shared counter, and a redelivered message updates
-the same row instead of being counted twice.
-
-## Requirements checklist
-
-| Requirement                                                     | Where                                                        |
-| --------------------------------------------------------------- | ------------------------------------------------------------ |
-| Public API to request fresh images                              | `POST /api/jobs` ([api/src/routes/jobs.ts](api/src/routes/jobs.ts)) |
-| Background processing via queues, fast initial call             | API only enqueues; [worker/](worker/) does the work           |
-| Blob Storage stores and exposes the images                      | [shared/src/storage/images.ts](shared/src/storage/images.ts) |
-| Queue Storage: create, read and delete messages                 | [worker/src/queueConsumer.ts](worker/src/queueConsumer.ts)   |
-| Buienradar API                                                  | [worker/src/services/buienradar.ts](worker/src/services/buienradar.ts) |
-| Public image API                                                | Lorem Picsum ([imageSource.ts](worker/src/services/imageSource.ts)) |
-| Public API to fetch the generated images                        | `GET /api/jobs/{id}/images`, `GET /api/jobs/{id}/images/{stationId}` |
-| Swagger UI                                                      | `/docs` ([api/src/openapi.ts](api/src/openapi.ts))           |
-| Bicep template incl. queues                                     | [infra/](infra/)                                             |
-| `deploy.sh` using the Azure CLI                                 | [infra/deploy.sh](infra/deploy.sh) (and [deploy.ps1](infra/deploy.ps1) for Windows) |
-| Multiple queues (start job + per-image)                         | `start-jobs` and `image-jobs`                                |
-| TypeScript                                                      | everything                                                   |
-| *Could:* SAS tokens instead of a public container               | container is private, API returns 24h read-only SAS links    |
-| *Could:* bearer authentication on the request API               | `POST /api/jobs` requires `Authorization: Bearer <ACCESS_TOKEN>` |
-| *Could:* status endpoint, status saved in Table Storage         | `GET /api/jobs/{id}` ([shared/src/storage/jobs.ts](shared/src/storage/jobs.ts)) |
-
 > Buienradar currently reports 40 stations, so a job produces 40 images. The limit is 50 (`STATION_LIMIT`).
 
 ## API
 
-| Method | Path                                    | Auth   | Description                                         |
-| ------ | --------------------------------------- | ------ | --------------------------------------------------- |
-| POST   | `/api/jobs`                             | Bearer | Start a job, returns `202` with `jobId` and links   |
-| GET    | `/api/jobs/{jobId}`                     | –      | Status and progress (`queued` → `fetching` → `processing` → `completed`/`failed`) |
-| GET    | `/api/jobs/{jobId}/images`              | –      | SAS links to all images generated so far            |
-| GET    | `/api/jobs/{jobId}/images/{stationId}`  | –      | Redirects to the image of one station               |
-| GET    | `/health`                               | –      | Health check                                        |
-| GET    | `/docs`                                 | –      | Swagger UI (`/openapi.json` for the raw spec)       |
+| Method | Path                                   | Auth   | Description                                                                       |
+| ------ | -------------------------------------- | ------ | --------------------------------------------------------------------------------- |
+| POST   | `/api/jobs`                            | Bearer | Start a job, returns `202` with `jobId` and links                                 |
+| GET    | `/api/jobs/{jobId}`                    | –      | Status and progress (`queued` → `fetching` → `processing` → `completed`/`failed`) |
+| GET    | `/api/jobs/{jobId}/images`             | –      | SAS links to all images generated so far                                          |
+| GET    | `/api/jobs/{jobId}/images/{stationId}` | –      | Redirects to the image of one station                                             |
+| GET    | `/health`                              | –      | Health check                                                                      |
+| GET    | `/docs`                                | –      | Swagger UI (`/openapi.json` for the raw spec)                                     |
 
 Only starting a job requires the token. Job ids are random UUIDs, so status and results are readable by whoever
 has the id.
