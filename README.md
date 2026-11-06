@@ -53,7 +53,7 @@ the same row instead of being counted twice.
 | Public API to fetch the generated images                        | `GET /api/jobs/{id}/images`, `GET /api/jobs/{id}/images/{stationId}` |
 | Swagger UI                                                      | `/docs` ([api/src/openapi.ts](api/src/openapi.ts))           |
 | Bicep template incl. queues                                     | [infra/](infra/)                                             |
-| `deploy.sh` using the Azure CLI                                 | [infra/deploy.sh](infra/deploy.sh)                           |
+| `deploy.sh` using the Azure CLI                                 | [infra/deploy.sh](infra/deploy.sh) (and [deploy.ps1](infra/deploy.ps1) for Windows) |
 | Multiple queues (start job + per-image)                         | `start-jobs` and `image-jobs`                                |
 | TypeScript                                                      | everything                                                   |
 | *Could:* SAS tokens instead of a public container               | container is private, API returns 24h read-only SAS links    |
@@ -92,7 +92,17 @@ cp .env.example .env     # adjust APP_NAME / REGION if you like
 ./infra/deploy.sh
 ```
 
-The script:
+On Windows, use the PowerShell version instead (works in Windows PowerShell 5.1 and PowerShell 7):
+
+```powershell
+Copy-Item .env.example .env
+.\infra\deploy.ps1
+```
+
+If PowerShell refuses to run the script because of the execution policy, start it with
+`powershell -ExecutionPolicy Bypass -File .\infra\deploy.ps1`.
+
+Both scripts do the same thing:
 
 1. registers the needed resource providers and creates the resource group `APP_NAME`;
 2. deploys [infra/main.bicep](infra/main.bicep) with `deployApps=false`: storage account (blob container, both
@@ -134,5 +144,5 @@ pnpm --filter @weatherapp/worker dev
 api/        Express API: routes, bearer auth, OpenAPI spec + Swagger UI
 worker/     Queue consumers: start job (Buienradar fan-out) and image job (photo + weather overlay)
 shared/     Config, logger, and Storage access (queues, blobs, job table) used by both
-infra/      Bicep templates (main.bicep + one module per resource) and deploy.sh
+infra/      Bicep templates (main.bicep + one module per resource), deploy.sh and deploy.ps1
 ```
