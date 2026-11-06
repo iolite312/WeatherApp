@@ -104,6 +104,7 @@ module apiContainerApp './apiContainerApp.bicep' = if (deployApps) {
     tags: tags
     appName: '${appName}-api'
     environmentId: containerAppsEnvironment.outputs.id
+    workloadProfileName: containerAppsEnvironment.outputs.workloadProfileName
     registryLoginServer: containerRegistry.outputs.loginServer
     pullIdentityId: containerRegistry.outputs.pullIdentityId
     image: '${containerRegistry.outputs.loginServer}/weather-api:${imageTag}'
@@ -129,6 +130,7 @@ module workerContainerApp './workerContainerApp.bicep' = if (deployApps) {
     tags: tags
     appName: '${appName}-worker'
     environmentId: containerAppsEnvironment.outputs.id
+    workloadProfileName: containerAppsEnvironment.outputs.workloadProfileName
     registryLoginServer: containerRegistry.outputs.loginServer
     pullIdentityId: containerRegistry.outputs.pullIdentityId
     image: '${containerRegistry.outputs.loginServer}/weather-worker:${imageTag}'

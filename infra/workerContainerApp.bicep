@@ -2,6 +2,7 @@ param location string
 param tags object
 param appName string
 param environmentId string
+param workloadProfileName string
 param registryLoginServer string
 param pullIdentityId string
 param image string
@@ -50,6 +51,7 @@ resource worker 'Microsoft.App/containerApps@2024-03-01' = {
   }
   properties: {
     managedEnvironmentId: environmentId
+    workloadProfileName: workloadProfileName
     configuration: {
       activeRevisionsMode: 'Single'
       registries: [

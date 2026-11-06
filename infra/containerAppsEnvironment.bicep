@@ -15,11 +15,20 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   }
 }
 
-resource environment 'Microsoft.App/managedEnvironments@2024-03-01' = {
+resource environment 'Microsoft.App/managedEnvironments@2026-07-01' = {
   name: environmentName
   location: location
   tags: tags
   properties: {
+    // Without an explicit mode Azure creates an "Express" environment, which doesn't support the queue-based (KEDA)
+    // scale rules the worker needs. The Consumption workload profile is still pay-per-use and scales to zero.
+    environmentMode: 'WorkloadProfiles'
+    workloadProfiles: [
+      {
+        name: 'Consumption'
+        workloadProfileType: 'Consumption'
+      }
+    ]
     appLogsConfiguration: {
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
@@ -31,3 +40,4 @@ resource environment 'Microsoft.App/managedEnvironments@2024-03-01' = {
 }
 
 output id string = environment.id
+output workloadProfileName string = 'Consumption'
